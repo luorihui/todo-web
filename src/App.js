@@ -31,7 +31,7 @@ function App() {
         body: JSON.stringify(newTodo),
       });
       const data = await response.json();
-      setTodos([...todos, data]);
+      setTodos([...todos, data.todo]);
       setIsCreating(false);
     } catch (error) {
       console.error('Error creating todo:', error);
@@ -53,10 +53,14 @@ function App() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (todoIds) => {
     try {
-      await fetch(`http://localhost:3001/todos/${id}`, { method: 'DELETE' });
-      setTodos(todos.filter(todo => todo._id !== id));
+      let newTodos = todos;
+      for (const id of todoIds) {
+        await fetch(`http://localhost:3001/todos/${id}`, { method: 'DELETE' });
+        newTodos = newTodos.filter(todo => todo._id != id);
+      }
+      setTodos(newTodos);
     } catch (error) {
       console.error('Error deleting todo:', error);
     }
